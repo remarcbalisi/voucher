@@ -33,7 +33,7 @@ def create_app():
     app = Flask(__name__, static_folder=STATIC_FOLDER,
                 template_folder=TEMPLATE_FOLDER,
                 )
-    app.json_encoder = MongoJsonEncoder
+    # app.json_encoder = MongoJsonEncoder
     config = configparser.ConfigParser()
     config.read(os.path.abspath(os.path.join("mongo.ini")))
     app.config['DEBUG'] = True

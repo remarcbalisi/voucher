@@ -8,6 +8,8 @@ from pymongo.errors import DuplicateKeyError, OperationFailure
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
 
+from techfarmlink.api.model.voucher import TransactionSchema, Voucher
+
 
 def get_db():
     """
@@ -27,28 +29,23 @@ db = LocalProxy(get_db)
 
 def get_unclaimed_vouchers():
     try:
-
-        return list(db.vouchers.find(
+        loaded_objects = db.vouchers.find(
             {"status": {"$eq": 'unclaimed'}}
-        ))
+        )
+        new_objects = []
+        for loaded_object in loaded_objects:
+            voucher_schema = TransactionSchema()
+            new_objects.append(voucher_schema.load(loaded_object).__dict__)
+        return new_objects
 
     except Exception as e:
+        print(e)
         return []
 
 
 def get_voucher_by_code(voucher_code):
     try:
-
-        pipeline = [
-            {
-                "$match": {
-                    "code": voucher_code
-                }
-            }
-        ]
-
-        voucher_code = db.vouchers.aggregate(pipeline).next()
-        return voucher_code
+        return db.vouchers.find({"voucher_code": {"$eq": voucher_code}})
 
     except (StopIteration) as _:
 
@@ -64,6 +61,7 @@ def add_voucher(name, description, voucher_code, amount, time_minutes, date):
     if exist:
         return False, f'Voucher {voucher_code} already exist', exist
 
-    voucher_doc = {'name': name, 'description': description, 'code': voucher_code, 'amount': amount,
-                   'time_minutes': time_minutes, 'date': date, 'status': 'unclaimed'}  # unclaimed, claimed, expired
+    voucher_doc = {'name': name, 'description': description, 'voucher_code': voucher_code, 'amount': amount,
+                   'time_minutes': time_minutes, 'created_at': date, 'status': 'unclaimed'}  # unclaimed, claimed, expired
+
     return True, f'Successfully added {voucher_code}', db.vouchers.insert_one(voucher_doc)
