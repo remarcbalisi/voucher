@@ -17,8 +17,10 @@ systemctl enable nginx
 `nano ./voucher/wsgi.py`
 
 Add the following lines:
+
 ```python
-from voucher.index import app
+from techfarmlink.voucher import app
+
 if __name__ == "__main__":
     app.run()
 ```
