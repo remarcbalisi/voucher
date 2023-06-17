@@ -20,7 +20,7 @@ class Voucher(object):
         return '<Voucher(name={self.name!r})>'.format(self=self)
 
 
-class TransactionSchema(Schema):
+class VoucherSchema(Schema):
     _id = fields.Str()
     name = fields.Str()
     description = fields.Str()

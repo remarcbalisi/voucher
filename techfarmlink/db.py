@@ -8,7 +8,7 @@ from pymongo.errors import DuplicateKeyError, OperationFailure
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
 
-from techfarmlink.api.model.voucher import TransactionSchema, Voucher
+from techfarmlink.api.model.voucher import VoucherSchema
 
 
 def get_db():
@@ -34,7 +34,7 @@ def get_unclaimed_vouchers():
         )
         new_objects = []
         for loaded_object in loaded_objects:
-            voucher_schema = TransactionSchema()
+            voucher_schema = VoucherSchema()
             new_objects.append(voucher_schema.load(loaded_object).__dict__)
         return new_objects
 
