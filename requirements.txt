@@ -4,3 +4,4 @@ pymongo[srv]==4.3.3
 Flask-PyMongo==2.3.0
 Flask-Cors==3.0.10
 marshmallow==3.19.0
+PyJWT==2.7.0

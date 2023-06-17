@@ -6,7 +6,7 @@ from marshmallow import Schema, fields, post_load, pre_load
 
 
 class User(object):
-    def __init__(self, name, email, phone_number, password, status, _id=None, email_verified=False, phone_number_verified=False, created_at=None):
+    def __init__(self, name, email, phone_number, password, status='active', _id=None, email_verified=False, phone_number_verified=False, created_at=None):
         self._id = _id or uuid.uuid4().hex
         self.name = name
         self.email = email
@@ -41,3 +41,14 @@ class UserSchema(Schema):
         data['_id'] = str(data['_id']) if isinstance(data['_id'], ObjectId) else data['_id']
         data['created_at'] = data['created_at'].strftime("%Y-%m-%d %H:%M:%S") if isinstance(data['created_at'], datetime) else data['created_at']
         return data
+
+
+class UserSchemaStore(Schema):
+    name = fields.Str()
+    email = fields.Str()
+    phone_number = fields.Str()
+    password = fields.Str()
+
+    @post_load
+    def make_store(self, data, **kwargs):
+        return User(**data)

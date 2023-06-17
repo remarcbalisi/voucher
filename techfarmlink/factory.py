@@ -11,6 +11,7 @@ from flask_cors import CORS
 from bson import json_util, ObjectId
 from datetime import datetime, timedelta
 
+from techfarmlink.api.user import user_api_v1
 from techfarmlink.api.voucher import voucher_api_v1
 from techfarmlink.voucher.index import voucher_web
 
@@ -38,11 +39,13 @@ def create_app():
     config.read(os.path.abspath(os.path.join("mongo.ini")))
     app.config['DEBUG'] = True
     app.config['MONGO_URI'] = config['PROD']['DB_URI']
+    app.config['SECRET_KEY'] = 'your secret key'
 
     CORS(app)
 
     app.register_blueprint(voucher_api_v1)
     app.register_blueprint(voucher_web)
+    app.register_blueprint(user_api_v1)
 
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')

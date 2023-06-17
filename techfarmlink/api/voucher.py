@@ -4,6 +4,7 @@ from datetime import datetime
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS
 
+from techfarmlink.api.decorators import token_required
 from techfarmlink.api.utils import expect
 from techfarmlink.db import add_voucher, get_unclaimed_vouchers
 
@@ -13,13 +14,14 @@ CORS(voucher_api_v1)
 
 
 @voucher_api_v1.route('/list', methods=['GET'])
+@token_required
 def api_get_vouchers():
 
     return jsonify({'message': 'Success', 'vouchers': get_unclaimed_vouchers()})
 
 
 @voucher_api_v1.route('/add', methods=["POST"])
-#@jwt_required
+@token_required
 def api_post_voucher():
     post_data = request.get_json()
     try:
