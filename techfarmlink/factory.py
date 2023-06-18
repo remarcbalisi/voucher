@@ -1,15 +1,13 @@
 import os
+import json
 import configparser
 
 from flask import Flask, render_template
-# from flask.json import JSONEncoder
 from json import JSONEncoder
 from flask_cors import CORS
-##from flask_bcrypt import Bcrypt
-##from flask_jwt_extended import JWTManager
 
 from bson import json_util, ObjectId
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from techfarmlink.api.user import user_api_v1
 from techfarmlink.api.voucher import voucher_api_v1
@@ -36,10 +34,12 @@ def create_app():
                 )
     # app.json_encoder = MongoJsonEncoder
     config = configparser.ConfigParser()
-    config.read(os.path.abspath(os.path.join("mongo.ini")))
-    app.config['DEBUG'] = True
-    app.config['MONGO_URI'] = config['PROD']['DB_URI']
-    app.config['SECRET_KEY'] = 'your secret key'
+    config.read(os.path.abspath(os.path.join("project.ini")))
+
+    ENVIRONMENT = config['GLOBAL']['ENVIRONMENT']
+    app.config['DEBUG'] = json.loads(config[ENVIRONMENT]['DEBUG'].lower())
+    app.config['MONGO_URI'] = config[ENVIRONMENT]['DB_URI']
+    app.config['SECRET_KEY'] = config[ENVIRONMENT]['SECRET_KEY']
 
     CORS(app)
 
