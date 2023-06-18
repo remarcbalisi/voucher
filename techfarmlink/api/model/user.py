@@ -3,6 +3,7 @@ import uuid
 
 from bson import ObjectId
 from marshmallow import Schema, fields, post_load, pre_load
+from werkzeug.security import generate_password_hash
 
 
 class User(object):
@@ -51,4 +52,23 @@ class UserSchemaStore(Schema):
 
     @post_load
     def make_store(self, data, **kwargs):
+        data['password'] = generate_password_hash(data['password'])
         return User(**data)
+
+
+class UserLogin(object):
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+    def __repr__(self):
+        return '<UserLogin(username={self.username!r})>'.format(self=self)
+
+
+class UserSchemaLogin(Schema):
+    username = fields.Str()
+    password = fields.Str()
+
+    @post_load
+    def make_store(self, data, **kwargs):
+        return UserLogin(**data)

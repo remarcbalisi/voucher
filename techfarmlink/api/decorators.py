@@ -1,8 +1,13 @@
 # decorator for verifying the JWT
+import os
+import sys
 from functools import wraps
 
 import jwt
 from flask import request, jsonify, current_app
+
+from techfarmlink.api.model.user import UserSchema
+from techfarmlink.api.queries.user import get_user_by_id
 
 
 def token_required(f):
@@ -18,15 +23,18 @@ def token_required(f):
 
         try:
             # decoding the payload to fetch the stored details
-            data = jwt.decode(token, current_app.config['SECRET_KEY'])
-            current_user = User.query \
-                .filter_by(public_id=data['public_id']) \
-                .first()
-        except:
+            data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms='HS256')
+            user = get_user_by_id(data['uuid'])
+            user_schema = UserSchema()
+            current_user = user_schema.load(user)
+        except Exception as ex:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
             return jsonify({
                 'message': 'Token is invalid.'
             }), 401
-        # returns the current logged in users context to the routes
+        # returns the current logged-in users context to the routes
         return f(current_user, *args, **kwargs)
 
     return decorated

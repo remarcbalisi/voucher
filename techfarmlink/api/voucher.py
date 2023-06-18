@@ -1,4 +1,3 @@
-import uuid
 from datetime import datetime
 
 from flask import Blueprint, request, jsonify
@@ -15,14 +14,14 @@ CORS(voucher_api_v1)
 
 @voucher_api_v1.route('/list', methods=['GET'])
 @token_required
-def api_get_vouchers():
+def api_get_vouchers(current_user):
 
     return jsonify({'message': 'Success', 'vouchers': get_unclaimed_vouchers()})
 
 
 @voucher_api_v1.route('/add', methods=["POST"])
 @token_required
-def api_post_voucher():
+def api_post_voucher(current_user):
     post_data = request.get_json()
     try:
         name = expect(post_data.get('name'), str, 'name')

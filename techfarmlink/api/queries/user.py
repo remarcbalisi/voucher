@@ -12,6 +12,16 @@ def get_user_by_email(email):
         return {}
 
 
+def get_user_by_id(user_id):
+    try:
+        user = list(db.users.find({"_id": {"$eq": user_id}}))
+        if user:
+            return user[0]
+        return False
+    except Exception as e:
+        return {}
+
+
 def add_user(user: UserSchemaStore):
 
     exist = get_user_by_email(user.email)
