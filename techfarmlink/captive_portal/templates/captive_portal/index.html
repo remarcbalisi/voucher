@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .blinking {
+            border: 10px solid #9ae2ff;
+            animation-name: blinking;
+            animation-duration: 1s;
+            animation-iteration-count: 100;
+
+        }
+        @keyframes blinking {
+          50% {
+            border-color: #ffcd5f;
+          }
+        }
+    </style>
+</head>
+<body>
+  <div class="flex justify-center items-center h-full" style="min-height: 600px; padding: 20% 0;">
+    <div id="checking-device" class="grid justify-items-center">
+      <img class="h-20" src="{{ url_for('static', filename='images/loading.gif') }}" />
+      <span>Checking your device..</span>
+    </div>
+    <div id="voucher-form" style="display:none;" class="grid justify-items-center">
+      <div class="w-1/2 mb-8">
+          <img src="{{ url_for('static', filename='images/captiveportal-logo.png') }}" >
+      </div>
+      <form method="post" action="$PORTAL_ACTION$" class="grid justify-items-center" onsubmit="return submitForm();">
+         <input class="text-xl p-2 mb-2 rounded-md shadow-sm bg-stone-50 border-b text-center" id="auth_user" name="auth_user" type="hidden">
+         <input class="text-xl p-2 mb-2 rounded-md shadow-sm bg-stone-50 border-b text-center" id="auth_pass" name="auth_pass" type="hidden">
+          <label class="text-2xs font-sans">Enter voucher code</label>
+         <input class="text-xl p-2 mb-2 rounded-md shadow-sm bg-stone-50 border-b text-center" style="border: 1px solid #00adff;" id="auth_voucher" name="auth_voucher" type="text" placeholder="Code" required>
+         <input name="redirurl" type="hidden" value="$PORTAL_REDIRURL$">
+         <input name="zone" type="hidden" value="$PORTAL_ZONE$">
+         <input class="p-2 mb-2 rounded-md shadow-sm border-b w-full" style="background-color: #00adff; color: white;" name="accept" type="submit" value="Login">
+         <div><span class="text-red-500 font-semibold text-sm">$PORTAL_MESSAGE$</span></div>
+      </form>
+      <div id="previous-code-div" style="display:none;" class="w-1/2 grid justify-items-center my-6">
+          <span class="font-medium text-green-600">Your previous code</span>
+          <div class="w-full text-center bg-gray-100 py-1">
+              <span id="previous-code-value"></span>
+          </div>
+          <div class="w-full pt-2">
+              <button class="p-2 mb-2 rounded-md shadow-sm bg-stone-50 border-b w-full" id="copy-prev-code" name="copy-prev-code" onclick="copyPreviousVoucherCode()">
+                  Copy
+              </button>
+          </div>
+      </div>
+        <div class="px-8">
+            <div class="flex justify-center py-2 text-2xl mb-4 blinking">
+                PROMO
+            </div>
+            <h2 class="font-medium">FREE VOUCHERS THIS WEEK</h2>
+            <span>Promo Mechanics:</span>
+            <ul>
+                <li class="bg-gray-100 p-2 mb-1">Within June 18-24 2023, kung makapalit kag balig 50 pesos pataas naay libre 1day voucher</li>
+                <li class="bg-gray-100 p-2 mb-1">Kada 50 pesos, naa kay 1day voucher. Eg. 150 pesos = x3 1day voucher</li>
+                <li class="bg-gray-100 p-2 mb-1">
+                    Kung mu-subscribe mo sa Youtube Channel namo
+                    <a href="https://www.youtube.com/@techfarm5113">https://www.youtube.com/@techfarm5113</a>
+                    Adunay 1day free voucher. Please show proof of subscription.
+                </li>
+            </ul>
+        </div>
+    </div>
+  </div>
+
+  <script language="JavaScript">
+    let checking_device = document.getElementById("checking-device");
+    let voucher_form = document.getElementById("voucher-form");
+    let prev_code_div = document.getElementById("previous-code-div");
+    let copy_press_count = 0;
+
+    window.onload = function(e){
+        getMachineId();
+        getPreviousVoucherCode();
+        document.getElementById("auth_voucher").focus();
+    }
+
+    function getPreviousVoucherCode() {
+      let previousVoucherCodeValue = localStorage.getItem('PreviousVoucherCode');
+
+      checking_device.style.display = 'none';
+      voucher_form.style.display = '';
+
+      if (previousVoucherCodeValue) {
+        document.getElementById("previous-code-value").innerHTML = previousVoucherCodeValue;
+        prev_code_div.style.display = ''
+      }
+    }
+
+    function setPreviousCode(codeValue) {
+        localStorage.setItem('PreviousVoucherCode', codeValue);
+    }
+
+    function getMachineId() {
+
+        let machineId = localStorage.getItem('MachineId');
+
+        if (!machineId) {
+            machineId = crypto.randomUUID();
+            localStorage.setItem('MachineId', machineId);
+        }
+
+        return machineId;
+    }
+
+    function myFunction() {
+      document.getElementById("demo").innerHTML = "Paragraph changed.";
+    }
+
+    function submitForm() {
+        let auth_voucher_value = document.getElementById('auth_voucher').value
+        setPreviousCode(auth_voucher_value)
+
+        voucher_form.style.display = 'none';
+        prev_code_div.style.display = 'none';
+        checking_device.style.display = '';
+        return true;
+    }
+
+    function copyPreviousVoucherCode() {
+        let text = document.getElementById("previous-code-value").textContent;
+        document.getElementById("auth_voucher").value = text;
+        copy_press_count++;
+
+        if (copy_press_count == 10) {
+            document.getElementById("auth_user").type = 'text';
+            document.getElementById("auth_pass").type = 'password';
+            document.getElementById("auth_voucher").required = false;
+            document.getElementById("auth_voucher").value = null;
+        }
+    }
+  </script>
+</body>
+</html>

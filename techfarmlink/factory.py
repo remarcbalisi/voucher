@@ -11,6 +11,7 @@ from datetime import datetime
 
 from techfarmlink.api.user import user_api_v1
 from techfarmlink.api.voucher import voucher_api_v1
+from techfarmlink.captive_portal.index import captive_portal_web
 from techfarmlink.voucher.index import voucher_web
 
 
@@ -46,6 +47,7 @@ def create_app():
     app.register_blueprint(voucher_api_v1)
     app.register_blueprint(voucher_web)
     app.register_blueprint(user_api_v1)
+    app.register_blueprint(captive_portal_web)
 
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
