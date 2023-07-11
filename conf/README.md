@@ -1,0 +1,1 @@
+sudo wget -O /usr/local/etc/oui.txt "https://standards-oui.ieee.org/oui/oui.txt"
