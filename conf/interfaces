@@ -1,0 +1,8 @@
+# file: /etc/network/interfaces auto lo
+auto eth0
+allow-hotplug eth1
+
+iface eth1 inet dhcp
+
+iface eth0 inet static
+  address 10.0.0.1/20
